@@ -1,2 +1,23 @@
 주의할 점!!
 - 사용자 인증 미들웨어랑 api 구현
+
+jwt에 어떤 정보를 넣었지..?
+
+210705
+회원가입 로그인 기능 구현
+글 작성하고 
+글 리스트 보여주는거까지
+
+비밀번호에 아이디 포함되있는지 확인하는거 Joi에서 못찾겠어서 그냥 원시적으로 includes 사용했다.
+
+UnhandledPromiseRejectionWarning: TypeError: Cannot read property 'toHexString' of undefined
+
+// 이렇게 하면 위에 오류가 나고
+userSchema.virtual("userId").get(() => {
+  return this._id.toHexString();
+});
+
+// 이렇게 하면 정상적으로 작동한다. this 공부할 필요가 있다.
+userSchema.virtual("userId").get(function () {
+  return this._id.toHexString();
+});

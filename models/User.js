@@ -17,7 +17,7 @@ const userSchema = new Schema({
   },
 });
 
-userSchema.virtual("userId").get(() => {
+userSchema.virtual("userId").get(function () {
   return this._id.toHexString();
 });
 
