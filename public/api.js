@@ -95,6 +95,25 @@ function signup() {
     });
 }
 
+function loadArticles(callback) {
+  axios
+    .get("/articles")
+    .then((res) => {
+      console.log(res.data);
+      callback(res.data);
+    })
+    .catch((error) => {
+      alert("게시글 불러오기를 실패했습니다.");
+    });
+}
+
+function makeArticleCard(i, v) {
+  const newArticleCard = `<p id=${v.articleId}>${i + 1} <a href="/articles/${
+    v.articleId
+  }">${v.title}</a> ${v.nickname} ${v.date}</p>`;
+  $(".articles-container").append(newArticleCard);
+}
+
 function openPostNewArticlePage() {
   window.location.href = "/newarticle";
 }
@@ -119,7 +138,7 @@ function postNewArticle() {
       }
     )
     .then((res) => {
-      window.location.href = "/articles"; // 여기 detail로 가도록 수정
+      window.location.href = "/"; // 여기 detail로 가도록 수정
     })
     .catch((error) => {
       alert(error.response.data.error);

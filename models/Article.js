@@ -24,7 +24,7 @@ const articleSchema = new Schema({
   },
 });
 
-articleSchema.virtual("articleId").get(() => {
+articleSchema.virtual("articleId").get(function () {
   return this._id.toHexString();
 });
 
