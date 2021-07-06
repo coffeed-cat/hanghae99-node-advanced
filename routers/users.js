@@ -46,18 +46,19 @@ router.post("/signup", async (req, res) => {
   try {
     await signupSchema.validateAsync(req.body);
     if (password.includes(id)) {
-      throw new Error("비밀번호에 ID가 포함되어있습니다.");
+      res.status(400).send({ message: "비밀번호에 ID가 포함되어있습니다." });
+      return;
     }
   } catch (error) {
     console.log(error);
-    res.status(400).send({ error });
+    res.status(400).send({ message: error.details[0].message });
     return;
   }
 
   const user = await User.findOne({ $or: [{ id }, { nickname }] });
 
   if (user) {
-    res.status(401).send({ error: "이미 존재하는 ID 또는 닉네임입니다." });
+    res.status(401).send({ message: "이미 존재하는 ID 또는 닉네임입니다." });
     return;
   }
 

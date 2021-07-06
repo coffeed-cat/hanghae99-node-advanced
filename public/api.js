@@ -58,8 +58,7 @@ function signin() {
       window.location.href = "/";
     })
     .catch((error) => {
-      console.log(error);
-      alert(error);
+      alert("아이디 또는 비밀번호를 확인해주세요.");
     });
 }
 
@@ -92,7 +91,7 @@ function signup() {
       window.location.href = "/users/signin";
     })
     .catch((error) => {
-      console.log(error.response.data.error);
+      alert(error.response.data.message);
     });
 }
 
