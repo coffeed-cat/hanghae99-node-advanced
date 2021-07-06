@@ -7,7 +7,7 @@ const authMiddleware = require("../middlewares/auth-middleware");
 
 router.use("/users", usersRouter);
 router.use("/articles", articlesRouter);
-router.use("/newarticle", authMiddleware, newarticleRouter);
+router.use("/newarticle", newarticleRouter);
 
 router.get("/", (req, res) => {
   res.render("index");

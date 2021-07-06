@@ -1,10 +1,3 @@
-// const { default: axios } = require('axios');
-
-$(document).ready(() => {
-  console.log("ok");
-  isItMe(console.log);
-});
-
 function isItMe(callback) {
   axios
     .get("/users/me", {
@@ -16,9 +9,23 @@ function isItMe(callback) {
       callback(res);
     })
     .catch((error) => {
-      console.log(error.response.data.errorMessage);
-      alert(error.response.data.errorMessage);
+      alert("로그인이 필요한 서비스입니다.");
+      deleteCookie("token");
+      openSigninPage();
     });
+}
+
+function loginChecker() {
+  if (getCookie("token")) {
+    isItMe(() => {
+      window.location.href = "/";
+      alert("이미 로그인되어있습니다. 홈페이지로 돌아갑니다.");
+    });
+  }
+}
+
+function deleteCookie(key) {
+  document.cookie = key + "=; expires=Thu, 01 Jan 1999 00:00:10 GMT;";
 }
 
 function getCookie(key) {
@@ -33,6 +40,10 @@ function setCookie(key, value, exp) {
     key + "=" + value + ";expires=" + date.toUTCString() + ";path=/";
 }
 
+function openSigninPage() {
+  window.location.href = "/users/signin";
+}
+
 function signin() {
   const id = $(".signin-id").val();
   const password = $(".signin-password").val();
@@ -43,12 +54,75 @@ function signin() {
       password,
     })
     .then((res) => {
-      console.log(res.data.token);
       setCookie("token", res.data.token, 2);
       window.location.href = "/";
     })
     .catch((error) => {
       console.log(error);
       alert(error);
+    });
+}
+
+function logout() {
+  if (getCookie("token")) {
+    deleteCookie("token");
+    alert("성공적으로 로그아웃되었습니다!");
+    window.location.href = "/users/signin";
+  }
+}
+
+function openSignupPage() {
+  window.location.href = "/users/signup";
+}
+
+function signup() {
+  const id = $(".signup-id").val();
+  const nickname = $(".signup-nickname").val();
+  const password = $(".signup-password").val();
+  const confirmPassword = $(".signup-confirmPassword").val();
+  axios
+    .post("/users/signup", {
+      id,
+      nickname,
+      password,
+      confirmPassword,
+    })
+    .then((res) => {
+      alert("회원가입을 축하드립니다!");
+      window.location.href = "/users/signin";
+    })
+    .catch((error) => {
+      console.log(error.response.data.error);
+    });
+}
+
+function openPostNewArticlePage() {
+  window.location.href = "/newarticle";
+}
+
+function postNewArticle() {
+  const date = new Date().getTime();
+  const title = $(".newarticle-title").val();
+  const content = $(".newarticle-content").val();
+
+  axios
+    .post(
+      "/newarticle",
+      {
+        date,
+        title,
+        content,
+      },
+      {
+        headers: {
+          authorization: `Bearer ${getCookie("token")}`,
+        },
+      }
+    )
+    .then((res) => {
+      window.location.href = "/articles"; // 여기 detail로 가도록 수정
+    })
+    .catch((error) => {
+      alert(error.response.data.error);
     });
 }

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="../public/api.js"></script>
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>게시글 작성</h1>
+    <p>title: <input class="newarticle-title" type="text" /></p>
+    <p>content: <input class="newarticle-content" type="text" /></p>
+    <button onclick="postNewArticle()">작성하기</button>
+    <script>
+      isItMe(() => {
+        return;
+      });
+    </script>
+  </body>
+</html>

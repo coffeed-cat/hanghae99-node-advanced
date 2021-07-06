@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="../public/api.js"></script>
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>Sign Up</h1>
+    <p>ID: <input class="signup-id" type="text" /></p>
+    <p>Nickname: <input class="signup-nickname" type="text" /></p>
+    <p>Password: <input class="signup-password" type="password" /></p>
+    <p>
+      Confirm Password: <input class="signup-confirmPassword" type="password" />
+    </p>
+    <button onclick="signup()">회원가입하기</button>
+    <script>
+      loginChecker();
+    </script>
+  </body>
+</html>

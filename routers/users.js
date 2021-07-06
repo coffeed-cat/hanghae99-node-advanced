@@ -69,7 +69,6 @@ router.post("/signup", async (req, res) => {
 
 router.get("/me", authMiddleware, async (req, res) => {
   const { user } = res.locals;
-  console.log(user);
   res.send({ user });
 });
 

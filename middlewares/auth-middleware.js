@@ -12,14 +12,14 @@ module.exports = async (req, res, next) => {
   console.log(authorization);
 
   if (!authorization) {
-    res.status(401).send({ errorMessage: "로그인이 필요한 서비스입니다." });
+    res.status(401).send({ message: "로그인이 필요한 서비스입니다." });
     return;
   }
 
   const [tokenType, token] = authorization.split(" ");
 
   if (tokenType != "Bearer") {
-    res.status(401).send({ error: "올바르지 않은 인증요청입니다." });
+    res.status(401).send({ message: "로그인이 필요한 서비스입니다." });
     return;
   }
   try {

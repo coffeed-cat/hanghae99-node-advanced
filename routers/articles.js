@@ -5,7 +5,7 @@ const commentsRouter = require("./comments");
 router.use("/comments", commentsRouter);
 
 router.get("/", (req, res) => {
-  res.json({ articles });
+  res.send("hi");
 });
 
 module.exports = router;
