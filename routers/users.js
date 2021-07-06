@@ -1,10 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/User");
+const User = require("../models/user");
 const SHA256 = require("crypto-js/sha256");
-const SECRET_KEY = require("../secretkey");
+const SECRET_KEY = require("../config/secretkey");
 const jwt = require("jsonwebtoken");
 const Joi = require("joi");
+const authMiddleware = require("../middlewares/auth-middleware");
 
 const signupSchema = Joi.object({
   id: Joi.string().alphanum().min(3).max(30).required(),
@@ -48,6 +49,7 @@ router.post("/signup", async (req, res) => {
       throw new Error("비밀번호에 ID가 포함되어있습니다.");
     }
   } catch (error) {
+    console.log(error);
     res.status(400).send({ error });
     return;
   }
@@ -63,6 +65,12 @@ router.post("/signup", async (req, res) => {
   await User.create({ id, nickname, password });
 
   res.status(201).send({});
+});
+
+router.get("/me", authMiddleware, async (req, res) => {
+  const { user } = res.locals;
+  console.log(user);
+  res.send({ user });
 });
 
 module.exports = router;
