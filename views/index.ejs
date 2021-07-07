@@ -23,10 +23,6 @@
     <script>
       let articles = null;
 
-      isItMe(() => {
-        return;
-      });
-
       $(document).ready(() => {
         loadArticles(function (articles) {
           for ([i, v] of articles.entries()) {

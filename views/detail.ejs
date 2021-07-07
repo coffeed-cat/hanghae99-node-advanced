@@ -16,7 +16,9 @@
       <span class="detail-nickname">Nickname</span
       ><span class="detail-date">Date</span>
     </p>
-    <div class="button-container"></div>
+    <div class="button-container">
+      <button onclick="openHomePage()">홈으로</button>
+    </div>
   </body>
   <script>
     const address = window.location.href;
@@ -33,10 +35,7 @@
       if (!token) {
         return;
       }
-      console.log("you have token");
       isItMe((res) => {
-        console.log(res.data.user.nickname, $(".detail-nickname").text());
-
         if (res.data.user.nickname == $(".detail-nickname").text()) {
           console.log("you are you");
           const deleteArticleButton =

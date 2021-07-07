@@ -10,16 +10,19 @@ router.get("/", (req, res) => {
 router.post("/", authMiddleware, async (req, res) => {
   const { date, title, content } = req.body;
   const { nickname } = res.locals.user;
+
   console.log(date, title, content, nickname);
 
+  let article = null;
+
   try {
-    await Article.create({ date, nickname, title, content });
+    article = await Article.create({ date, nickname, title, content });
   } catch (error) {
     res.status(401).send({ error });
     return;
   }
 
-  res.status(201).send({});
+  res.status(201).send({ articleId: article._id });
 });
 
 module.exports = router;

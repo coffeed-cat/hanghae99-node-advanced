@@ -25,7 +25,9 @@ router.delete("/:articleId", authMiddleware, async (req, res) => {
     res.status(400).send({ message: "존재하지 않는 게시물입니다." });
     return;
   } else if (article.nickname != nickname) {
-    res.status(401).send({ message: "존재하지 않는 게시물입니다." });
+    res
+      .status(401)
+      .send({ message: "다른 사용자의 게시물은 삭제할 수 없습니다." });
     return;
   }
 

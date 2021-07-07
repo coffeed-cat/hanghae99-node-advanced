@@ -40,6 +40,10 @@ function setCookie(key, value, exp) {
     key + "=" + value + ";expires=" + date.toUTCString() + ";path=/";
 }
 
+function openHomePage() {
+  window.location.href = "/";
+}
+
 function openSigninPage() {
   window.location.href = "/users/signin";
 }
@@ -66,7 +70,7 @@ function logout() {
   if (getCookie("token")) {
     deleteCookie("token");
     alert("성공적으로 로그아웃되었습니다!");
-    window.location.href = "/users/signin";
+    window.location.href = "/";
   }
 }
 
@@ -114,6 +118,16 @@ function makeArticleCard(i, v) {
 }
 
 function openPostNewArticlePage() {
+  if (!getCookie("token")) {
+    if (
+      confirm(
+        "로그인이 필요한 서비스입니다.\n로그인 페이지로 이동하시겠습니까?"
+      )
+    ) {
+      window.location.href = "/users/signin";
+    }
+    return;
+  }
   window.location.href = "/newarticle";
 }
 
@@ -169,9 +183,10 @@ function postNewArticle() {
       }
     )
     .then((res) => {
-      window.location.href = "/"; // 여기 detail로 가도록 수정
+      window.location.href = `/articles/${res.data.articleId}`;
     })
     .catch((error) => {
-      alert(error.response.data.error);
+      alert("게시글 작성에 실패했습니다.");
+      window.location.href = "/";
     });
 }
