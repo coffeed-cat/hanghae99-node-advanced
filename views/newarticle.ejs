@@ -10,13 +10,34 @@
     <title>Document</title>
   </head>
   <body>
-    <h1>게시글 작성</h1>
+    <h1 class="newarticle-bigtitle">게시글 작성</h1>
     <p>title: <input class="newarticle-title" type="text" /></p>
     <p>content: <input class="newarticle-content" type="text" /></p>
-    <button onclick="postNewArticle()">작성하기</button>
+    <button class="newarticle-submit" onclick="postNewArticle()">
+      작성하기
+    </button>
     <script>
       isItMe(() => {
         return;
+      });
+
+      const address = window.location.search;
+      const queryString = new URLSearchParams(address);
+      const articleId = queryString.get("articleId");
+
+      $(document).ready(() => {
+        if (articleId) {
+          // 즉, 수정하러 이 페이지에 들어온거라면
+          $(".newarticle-bigtitle").text("게시글 수정");
+          $(".newarticle-submit").text("수정하기");
+          document
+            .querySelector(".newarticle-submit")
+            .setAttribute("onclick", `updateArticle('${articleId}')`);
+          loadArticles((article) => {
+            $(".newarticle-content").val(article.content);
+            $(".newarticle-title").val(article.title);
+          }, articleId);
+        }
       });
     </script>
   </body>

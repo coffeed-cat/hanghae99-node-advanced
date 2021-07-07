@@ -25,4 +25,28 @@ router.post("/", authMiddleware, async (req, res) => {
   res.status(201).send({ articleId: article._id });
 });
 
+router.patch("/:articleId", authMiddleware, async (req, res) => {
+  const { articleId } = req.params;
+  const { lastFixDate, title, content } = req.body;
+  const { nickname } = res.locals.user;
+
+  const article = await Article.findById(articleId);
+
+  if (article.nickname != nickname) {
+    res.status(401).send({ message: "다른 사용자의 글은 수정할 수 없습니다." });
+    return;
+  }
+
+  try {
+    await Article.updateOne(
+      { _id: articleId },
+      { $set: { lastFixDate, title, content } }
+    );
+  } catch (error) {
+    res.status(400).send({ message: "게시글 수정에 실패했습니다." });
+  }
+
+  res.send({});
+});
+
 module.exports = router;

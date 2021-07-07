@@ -163,6 +163,48 @@ function deleteArticle() {
   }
 }
 
+function openUpdateArticlePage(articleId) {
+  window.location.href = `/newarticle?articleId=${articleId}`;
+}
+
+function updateArticle(articleId) {
+  if (!articleId) {
+    alert("올바르지 않은 요청입니다.");
+    return;
+  }
+  console.log("okok update"); ///////////////////////////////////
+  const lastFixDate = new Date().getTime();
+  const title = $(".newarticle-title").val();
+  const content = $(".newarticle-content").val();
+
+  axios
+    .patch(
+      `/newarticle/${articleId}`,
+      {
+        lastFixDate,
+        title,
+        content,
+      },
+      {
+        headers: {
+          authorization: `Bearer ${getCookie("token")}`,
+        },
+      }
+    )
+    .then((res) => {
+      alert("글 수정을 완료하였습니다!");
+      window.location.href = `/articles/${articleId}`;
+    })
+    .catch((error) => {
+      if (error.response.status == 401) {
+        alert("다른 사용자의 글은 수정할 수 없습니다.");
+      } else {
+        alert("게시글 수정에 실패했습니다.");
+      }
+      window.location.href = "/";
+    });
+}
+
 function postNewArticle() {
   const date = new Date().getTime();
   const title = $(".newarticle-title").val();

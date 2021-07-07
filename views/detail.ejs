@@ -37,11 +37,10 @@
       }
       isItMe((res) => {
         if (res.data.user.nickname == $(".detail-nickname").text()) {
-          console.log("you are you");
+          console.log("you are you", articleId);
           const deleteArticleButton =
             '<button onclick="deleteArticle()">삭제하기</button>';
-          const updateArticleButton =
-            '<button onclick="updateArticle()">수정하기</button>';
+          const updateArticleButton = `<button onclick="openUpdateArticlePage('${articleId}')">수정하기</button>`;
           $(".button-container").append(deleteArticleButton);
           $(".button-container").append(updateArticleButton);
         }
