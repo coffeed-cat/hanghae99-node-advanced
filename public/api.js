@@ -124,6 +124,31 @@ function renderArticleDetail(article) {
   $(".detail-date").text(article.date);
 }
 
+function deleteArticle() {
+  if (!confirm("글을 삭제하시겠습니까?")) {
+    return;
+  } else {
+    axios
+      .delete(`/articles/${articleId}`, {
+        headers: {
+          authorization: `Bearer ${getCookie("token")}`,
+        },
+      })
+      .then(() => {
+        alert("글 삭제가 완료되었습니다!");
+        window.location.href = "/";
+      })
+      .catch((error) => {
+        if (error.response.status == 401) {
+          alert("다른 사용자의 글은 삭제할 수 없습니다.");
+        } else {
+          alert("글 삭제에 실패했습니다.");
+        }
+        window.location.href = "/";
+      });
+  }
+}
+
 function postNewArticle() {
   const date = new Date().getTime();
   const title = $(".newarticle-title").val();

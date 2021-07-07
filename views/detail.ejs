@@ -16,18 +16,37 @@
       <span class="detail-nickname">Nickname</span
       ><span class="detail-date">Date</span>
     </p>
+    <div class="button-container"></div>
   </body>
   <script>
     const address = window.location.href;
     const parameters = address.split("/");
     const articleId = parameters[parameters.length - 1];
 
-    isItMe(() => {
-      return;
-    });
-
     $(document).ready(() => {
       loadArticles(renderArticleDetail, articleId);
+      isThisMyArticle();
     });
+
+    function isThisMyArticle() {
+      const token = getCookie("token");
+      if (!token) {
+        return;
+      }
+      console.log("you have token");
+      isItMe((res) => {
+        console.log(res.data.user.nickname, $(".detail-nickname").text());
+
+        if (res.data.user.nickname == $(".detail-nickname").text()) {
+          console.log("you are you");
+          const deleteArticleButton =
+            '<button onclick="deleteArticle()">삭제하기</button>';
+          const updateArticleButton =
+            '<button onclick="updateArticle()">수정하기</button>';
+          $(".button-container").append(deleteArticleButton);
+          $(".button-container").append(updateArticleButton);
+        }
+      });
+    }
   </script>
 </html>
