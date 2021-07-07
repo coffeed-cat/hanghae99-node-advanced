@@ -25,7 +25,7 @@ module.exports = async (req, res, next) => {
   try {
     const { userId } = jwt.verify(token, SECRET_KEY);
 
-    const user = await User.findById(userId);
+    const user = await User.findById(userId, { password: false });
 
     if (!user) {
       throw new Error("존재하지 않는 회원입니다.");

@@ -3,6 +3,10 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const commentSchema = new Schema({
+  articleId: {
+    type: String,
+    required: true,
+  },
   date: {
     type: Number,
     required: true,
@@ -17,7 +21,7 @@ const commentSchema = new Schema({
   },
 });
 
-commentSchema.virtual("commentId").get(() => {
+commentSchema.virtual("commentId").get(function () {
   return this._id.toHexString();
 });
 

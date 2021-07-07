@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
     <script src="../public/api.js"></script>
     <title>Document</title>
   </head>
@@ -19,32 +20,70 @@
     <div class="button-container">
       <button onclick="openHomePage()">홈으로</button>
     </div>
+
+    <div class="comment-container">
+      <h1 class="comment-bigtitle">댓글</h1>
+      <p class="comment-input-container">
+        <input class="comment-input" type="text" /><button
+          onclick="postComment()"
+        >
+          입력
+        </button>
+      </p>
+      <div class="comments">
+        <p class="comment">
+          <span class="comment-nickname">닉네임 : </span
+          ><span class="comment-content">내용</span>
+        </p>
+        <p class="comment">
+          <span class="comment-nickname">닉네임 : </span
+          ><span class="comment-content">내용</span>
+        </p>
+        <p class="comment">
+          <span class="comment-nickname">닉네임 : </span
+          ><span class="comment-content">내용</span>
+        </p>
+      </div>
+    </div>
   </body>
   <script>
     const address = window.location.href;
     const parameters = address.split("/");
     const articleId = parameters[parameters.length - 1];
+    let nickname = null;
 
     $(document).ready(() => {
       loadArticles(renderArticleDetail, articleId);
-      isThisMyArticle();
+      getNickname();
+      socket.emit("ENTER_DETAIL", articleId);
+      socket.on("COMMENTS_CHANGED_FROM_BACK", () => {
+        loadComments(renderComments, articleId, nickname);
+      });
     });
 
-    function isThisMyArticle() {
+    async function getNickname() {
+      // nickname을 얻고, 자기 글일 시 수정삭제 버튼 붙이는 함수
       const token = getCookie("token");
+
       if (!token) {
         return;
       }
-      isItMe((res) => {
-        if (res.data.user.nickname == $(".detail-nickname").text()) {
-          console.log("you are you", articleId);
-          const deleteArticleButton =
-            '<button onclick="deleteArticle()">삭제하기</button>';
-          const updateArticleButton = `<button onclick="openUpdateArticlePage('${articleId}')">수정하기</button>`;
-          $(".button-container").append(deleteArticleButton);
-          $(".button-container").append(updateArticleButton);
-        }
+
+      await isItMe((user) => {
+        nickname = user.nickname;
+        isThisMyArticle();
+        loadComments(renderComments, articleId, nickname);
       });
+    }
+
+    function isThisMyArticle() {
+      if (nickname == $(".detail-nickname").text()) {
+        const deleteArticleButton =
+          '<button onclick="deleteArticle()">삭제하기</button>';
+        const updateArticleButton = `<button onclick="openUpdateArticlePage('${articleId}')">수정하기</button>`;
+        $(".button-container").append(deleteArticleButton);
+        $(".button-container").append(updateArticleButton);
+      }
     }
   </script>
 </html>

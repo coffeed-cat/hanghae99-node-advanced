@@ -1,3 +1,9 @@
+const socket = io("ws://localhost:8080");
+
+socket.on("connect", () => {
+  console.log("I'm here!");
+});
+
 function isItMe(callback) {
   axios
     .get("/users/me", {
@@ -6,7 +12,8 @@ function isItMe(callback) {
       },
     })
     .then((res) => {
-      callback(res);
+      callback(res.data.user);
+      // callback(res); // 왜 res.data를 넣으면 로그인이 필요하다고 뜨지?
     })
     .catch((error) => {
       alert("로그인이 필요한 서비스입니다.");
@@ -204,6 +211,67 @@ function updateArticle(articleId) {
       window.location.href = "/";
     });
 }
+
+function loadComments(callback, articleId, nickname) {
+  axios
+    .get(`/articles/${articleId}/comments`)
+    .then((res) => {
+      callback(res.data, nickname);
+    })
+    .catch((error) => {
+      alert("게시글 불러오기를 실패했습니다.");
+    });
+}
+
+function renderComments(comments, nickname) {
+  $(".comments").empty();
+  for (i of comments) {
+    console.log(i.commentId, i.nickname, nickname);
+    const newComment = `<p id="${i.commentId}" class="comment">
+                          <span class="comment-nickname">${i.nickname} : </span
+                          ><span class="comment-content">${i.content}</span>
+                          <span class="comment-date">${i.date}</span>
+                        </p>`;
+    $(".comments").append(newComment);
+    if (i.nickname === nickname) {
+      const newButton = `<button onclick="openUpdateCommentForm('${i.commentId}')">수정하기</button>
+                            <button onclick="deleteComment('${i.commentId}')">삭제하기</button>`;
+      $(`#${i.commentId}`).append(newButton);
+    } //만약 댓글의 닉네임과, 접속한 사람의 닉네임이 같으면 수정삭제 버튼 추가
+  }
+}
+
+function postComment() {
+  const content = $(".comment-input").val();
+  const date = new Date().getTime();
+
+  if (!content) {
+    alert("내용을 입력해주세요.");
+    return;
+  }
+
+  axios
+    .post(
+      `/articles/${articleId}/comments`,
+      { date, content },
+      {
+        headers: {
+          authorization: `Bearer ${getCookie("token")}`,
+        },
+      }
+    )
+    .then((res) => {
+      $(".comment-input").val("");
+      socket.emit("COMMENTS_CHANGED_FROM_FRONT", articleId);
+    })
+    .catch((error) => {
+      alert("댓글 작성에 실패했습니다.");
+    });
+}
+
+function openUpdateCommentForm(nickname) {}
+
+function updateComment() {}
 
 function postNewArticle() {
   const date = new Date().getTime();
