@@ -20,3 +20,127 @@ userSchema.virtual("userId").get(() => {
 userSchema.virtual("userId").get(function () {
   return this._id.toHexString();
 });
+
+210706
+
+유저 인증 API부터 만들고,
+글 작성, 게시글 목록 보여주는거 만들어서 잘 작동하는지 확인
+
+ejs에 js파일 연결할때 그냥 script src 쓰면 안된다
+app.use("/public", express.static("public"));\
+이렇게 써야함
+
+require는 그냥 js에는 없다.
+그래서 그냥 CDN을 썼다.
+
+왜 내가 보내주는 에러메세지를 못받아오지?
+
+axios.get('/user/12345')
+  .catch(function (error) {
+    if (error.response) {
+      // 요청이 이루어졌으며 서버가 2xx의 범위를 벗어나는 상태 코드로 응답했습니다.
+      console.log(error.response.data); // 여기 들어있었다.
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    }
+    else if (error.request) {
+      // 요청이 이루어 졌으나 응답을 받지 못했습니다.
+      // `error.request`는 브라우저의 XMLHttpRequest 인스턴스 또는
+      // Node.js의 http.ClientRequest 인스턴스입니다.
+      console.log(error.request);
+    }
+    else {
+      // 오류를 발생시킨 요청을 설정하는 중에 문제가 발생했습니다.
+      console.log('Error', error.message);
+    }
+    console.log(error.config);
+  });
+
+  axios에 그냥 res.send내용만 들어오는게 아니고 여러가지로 들어온다. 거기서 빼줘야한다. 안해줘서 undefined됐었다.
+  axios에 헤더를 넣는 방법을 알았다.
+  쿠키 저장 가져오는 함수 만들기 귀찮네
+
+  인증 헤더 일일히 붙여줘야하나
+
+
+
+
+
+
+
+
+
+  페이지 이동할 때의 사용자 검증
+  
+  튜터님이 하신 방법
+
+  1)
+  href를 아래와 같이 써서
+  /detail.html?goodsId=@@@ 
+  페이지 이동
+
+  2)
+  페이지 들어가자마자 사용자 검증을 했다
+
+  3)
+  그리고 필요한 정보들을 가져와서 렌더링 했다
+
+////////////////////////////////////////////////////////
+
+  내가 한 방법(잘못됨)
+
+  0)
+  처음에는 axios.get( '/newarticle',헤더 ) 로 res.render를 하려했는데 작동을 안했다. 
+
+  1)
+  다음으로 href를
+  /newarticle
+  로 썼다.
+  근데 /newarticle 라우터들에 전부 auth미들웨어 붙어있어서 로그인 하라고 뜨게됨
+
+  2)
+  헤더를 어떻게 보내주지 싶어서 고민하다가 그냥 튜터님 방법으로 전환.
+  대신 newarticleRouter의 인증 미들웨어는 떼고, 필요한것들에 각각 붙여주기로 했다.
+  근데 이게 사실상 페이지 렌더만 빼고 전부 다 쓴다.
+
+  3) 
+  튜터님 방법으로 하면 안그래도 되나?
+  튜터님 방법은 애초에 렌더전용api가 없으니까 가능할 듯
+
+token없을때 alert창이 undefined로 뜸
+
+error 뜨는 양식이 전부 다른데 어떻게 처리하면 좋을까
+그냥 코드만 구분해서 보내줘? 같은 코드에 여러 종류의 에러가 있으면 어떡해?
+
+메인페이지를 들어갔는데
+토큰이 잘못되서,isItMe()의 catch부분이 로그인페이지로 돌려보낸다
+->
+근데 토큰 있으니까 돌려보낸다
+->
+토큰 잘못됐다니까ㅠㅠㅠ 다시 로그인페이지로 돌려보낸다
+
+무한반복을 방지하기 위해
+1) isItMe()의 catch부분에 쿠키를 삭제하는 코드 추가
+2) 아래의 신기한 구조로 혹시나 돌려보내기 전에 token을 검사해서 잘못된 token이면 안돌려보낸다.
+
+
+오늘의 신기한 구조
+로그인 되어있으면 다시 홈페이지로 돌려보내는 코드
+키포인트는
+1) 진짜로 로그인이 되어있을 때만 즉, token이 있을 때만 작동되어야하고,
+2) 그 token이 가짜라면 돌려보내선 안된다.
+그것을 튜터님은 이렇게 표현하셨다
+
+if (쿠키에 token이 존재한다면) {
+  isItMe()를 실행, 존재하지 않으면 로그인하게 둠
+  isItMe( )는 끝까지 돌았을때만(token이 진짜일때만) 콜백을 실행하니까
+  콜백으로 alert를 하고 홈페이지로 돌려보내는 함수를 넣어줬다
+}
+
+
+axios의 post요청에 headers 붙이는법
+axios.post(Helper.getUserAPI(), data, {
+    headers: headers
+  })
+
+entries()

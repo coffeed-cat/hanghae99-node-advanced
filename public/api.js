@@ -95,11 +95,10 @@ function signup() {
     });
 }
 
-function loadArticles(callback) {
+function loadArticles(callback, articleId) {
   axios
-    .get("/articles")
+    .get(`/articles/${articleId ? articleId + "/data" : ""}`)
     .then((res) => {
-      console.log(res.data);
       callback(res.data);
     })
     .catch((error) => {
@@ -116,6 +115,13 @@ function makeArticleCard(i, v) {
 
 function openPostNewArticlePage() {
   window.location.href = "/newarticle";
+}
+
+function renderArticleDetail(article) {
+  $(".detail-title").text(article.title);
+  $(".detail-content").text(article.content);
+  $(".detail-nickname").text(article.nickname);
+  $(".detail-date").text(article.date);
 }
 
 function postNewArticle() {
