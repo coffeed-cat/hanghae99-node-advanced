@@ -69,15 +69,27 @@ router.post("/:articleId/comments", authMiddleware, async (req, res) => {
   res.send({});
 });
 
+router.get("/:articleId/comments/:commentId", async (req, res) => {
+  const { articleId, commentId } = req.params;
+  const comment = await Comment.findById(commentId);
+  console.log(req.params, comment);
+
+  if (comment.articleId !== articleId) {
+    res.status(400).send({ message: "잘못된 요청입니다." });
+  }
+
+  res.send(comment);
+});
+
 router.patch(
-  "/:articleId/comments/:commentsId",
+  "/:articleId/comments/:commentId",
   authMiddleware,
   async (req, res) => {
-    const { articleId, commentsId } = req.params;
+    const { articleId, commentId } = req.params;
     const { content } = req.body;
     const { nickname } = res.locals.user;
 
-    const comment = await Comment.findById(commentsId);
+    const comment = await Comment.findById(commentId);
 
     if (comment.nickname != nickname) {
       res

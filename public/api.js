@@ -212,21 +212,20 @@ function updateArticle(articleId) {
     });
 }
 
-function loadComments(callback, articleId, nickname) {
+function loadComments(callback, articleId, nickname, commentId) {
   axios
-    .get(`/articles/${articleId}/comments`)
+    .get(`/articles/${articleId}/comments/${commentId ? commentId : ""}`)
     .then((res) => {
       callback(res.data, nickname);
     })
     .catch((error) => {
-      alert("게시글 불러오기를 실패했습니다.");
+      alert("댓글 불러오기를 실패했습니다.");
     });
 }
 
 function renderComments(comments, nickname) {
   $(".comments").empty();
   for (i of comments) {
-    console.log(i.commentId, i.nickname, nickname);
     const newComment = `<p id="${i.commentId}" class="comment">
                           <span class="comment-nickname">${i.nickname} : </span
                           ><span class="comment-content">${i.content}</span>
@@ -234,8 +233,8 @@ function renderComments(comments, nickname) {
                         </p>`;
     $(".comments").append(newComment);
     if (i.nickname === nickname) {
-      const newButton = `<button onclick="openUpdateCommentForm('${i.commentId}')">수정하기</button>
-                            <button onclick="deleteComment('${i.commentId}')">삭제하기</button>`;
+      const newButton = `<button class="update-comment-button" onclick="openUpdateCommentForm('${i.commentId}')">수정하기</button>
+                            <button class="delete-comment-button" onclick="deleteComment('${i.commentId}')">삭제하기</button>`;
       $(`#${i.commentId}`).append(newButton);
     } //만약 댓글의 닉네임과, 접속한 사람의 닉네임이 같으면 수정삭제 버튼 추가
   }
@@ -269,9 +268,55 @@ function postComment() {
     });
 }
 
-function openUpdateCommentForm(nickname) {}
+function openUpdateCommentForm(commentId) {
+  isItMe((user) => {
+    if (user.nickname !== nickname) {
+      alert("다른 사용자의 댓글은 수정할 수 없습니다.");
+      window.location.reload();
+      return;
+    }
+    loadComments(
+      (data, nickname) => {
+        const updateCommentForm = `<input class="update-comment-form" type="text"/>`;
+        $(`#${commentId} .comment-content`).text(" ");
+        $(`#${commentId} .comment-content`).append(updateCommentForm);
+        $(`#${commentId} .update-comment-form`).val(`${data.content}`);
+        document
+          .getElementById(`${commentId}`)
+          .querySelector(".update-comment-button")
+          .setAttribute(
+            "onclick",
+            `updateComment('${commentId}','${articleId}')`
+          );
+      },
+      articleId,
+      nickname,
+      commentId
+    );
+  });
+}
 
-function updateComment() {}
+function updateComment(commentId, articleId) {
+  const content = $(`#${commentId} .update-comment-form`).val();
+
+  axios
+    .patch(
+      `/articles/${articleId}/comments/${commentId}`,
+      { content },
+      {
+        headers: {
+          authorization: `Bearer ${getCookie("token")}`,
+        },
+      }
+    )
+    .then((res) => {
+      window.location.reload();
+    })
+    .catch((error) => {
+      alert("수정에 실패했습니다.");
+      window.location.reload();
+    });
+}
 
 function postNewArticle() {
   const date = new Date().getTime();
