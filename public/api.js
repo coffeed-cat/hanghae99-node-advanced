@@ -241,6 +241,16 @@ function renderComments(comments, nickname) {
 }
 
 function postComment() {
+  if (!getCookie("token")) {
+    if (
+      confirm(
+        "로그인이 필요한 서비스입니다.\n로그인 페이지로 이동하시겠습니까?"
+      )
+    ) {
+      window.location.href = "/users/signin";
+    }
+    return;
+  }
   const content = $(".comment-input").val();
   const date = new Date().getTime();
 
@@ -299,6 +309,11 @@ function openUpdateCommentForm(commentId) {
 function updateComment(commentId, articleId) {
   const content = $(`#${commentId} .update-comment-form`).val();
 
+  if (!content) {
+    alert("수정할 내용을 입력해주세요.");
+    return;
+  }
+
   axios
     .patch(
       `/articles/${articleId}/comments/${commentId}`,
@@ -310,11 +325,42 @@ function updateComment(commentId, articleId) {
       }
     )
     .then((res) => {
-      window.location.reload();
+      socket.emit("COMMENTS_CHANGED_FROM_FRONT", articleId);
     })
     .catch((error) => {
       alert("수정에 실패했습니다.");
       window.location.reload();
+    });
+}
+
+function deleteComment(commentId) {
+  if (!getCookie("token")) {
+    if (
+      confirm(
+        "로그인이 필요한 서비스입니다.\n로그인 페이지로 이동하시겠습니까?"
+      )
+    ) {
+      window.location.href = "/users/signin";
+    }
+    return;
+  }
+
+  if (!confirm("댓글을 삭제하시겠습니까?")) {
+    return;
+  }
+
+  axios
+    .delete(`/articles/${articleId}/comments/${commentId}`, {
+      headers: {
+        authorization: `Bearer ${getCookie("token")}`,
+      },
+    })
+    .then(() => {
+      socket.emit("COMMENTS_CHANGED_FROM_FRONT", articleId);
+    })
+    .catch((error) => {
+      alert("삭제에 실패했습니다.");
+      // window.location.reload();
     });
 }
 

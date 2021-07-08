@@ -8,11 +8,15 @@ const Joi = require("joi");
 const authMiddleware = require("../middlewares/auth-middleware");
 
 const signupSchema = Joi.object({
-  id: Joi.string().alphanum().min(3).max(30).required(),
+  id: Joi.string()
+    .pattern(new RegExp("^(?=.*[a-zA-Z])(?=.*[0-9]).{5,30}$"))
+    .required(),
 
   nickname: Joi.string().min(3).max(30).required(),
 
-  password: Joi.string().pattern(new RegExp("^[a-zA-Z0-9]{4,30}$")).required(),
+  password: Joi.string()
+    .pattern(new RegExp("^(?=.*[a-zA-Z])(?=.*[0-9]).{4,30}$"))
+    .required(),
 
   confirmPassword: Joi.ref("password"),
 }).with("password", "confirmPassword");

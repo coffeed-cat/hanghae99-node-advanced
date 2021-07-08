@@ -8,7 +8,7 @@ const authMiddleware = require("../middlewares/auth-middleware");
 // router.use("/:articleId/comments", commentsRouter);
 
 router.get("/", async (req, res) => {
-  const articles = await Article.find({});
+  const articles = await Article.find({}).sort({ date: -1 });
   res.send(articles);
 });
 
@@ -50,7 +50,7 @@ router.get("/:articleId/data", async (req, res) => {
 
 router.get("/:articleId/comments", async (req, res) => {
   const { articleId } = req.params;
-  const comments = await Comment.find({ articleId });
+  const comments = await Comment.find({ articleId }).sort({ date: -1 });
   res.send(comments);
 });
 
@@ -108,6 +108,39 @@ router.patch(
     } catch (error) {
       res.status(400).send({ message: "잘못된 요청입니다" });
       return; // DB에서 업데이트하는 중 오류가 생겼을 경우
+    }
+
+    res.send({});
+  }
+);
+
+router.delete(
+  "/:articleId/comments/:commentId",
+  authMiddleware,
+  async (req, res) => {
+    const { articleId, commentId } = req.params;
+    const { content } = req.body;
+    const { nickname } = res.locals.user;
+
+    const comment = await Comment.findById(commentId);
+
+    if (comment.nickname != nickname) {
+      res
+        .status(401)
+        .send({ message: "다른 사용자의 댓글은 삭제할 수 없습니다." });
+      return; // 다른 사용자의 댓글삭제를 요청한 경우
+    }
+
+    if (comment.articleId != articleId) {
+      res.status(400).send({ message: "잘못된 요청입니다.." });
+      return; // 다른 글의 댓글삭제를 요청한 경우
+    }
+
+    try {
+      await Comment.deleteOne({ _id: commentId });
+    } catch (error) {
+      res.status(400).send({ message: "잘못된 요청입니다" });
+      return; // DB에서 삭제하는 중 오류가 생겼을 경우
     }
 
     res.send({});

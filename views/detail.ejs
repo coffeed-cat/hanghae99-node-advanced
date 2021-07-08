@@ -66,6 +66,7 @@
       const token = getCookie("token");
 
       if (!token) {
+        loadComments(renderComments, articleId);
         return;
       }
 
