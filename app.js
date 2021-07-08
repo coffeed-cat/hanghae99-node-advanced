@@ -35,3 +35,5 @@ app.use(
 http.listen(8080, () => {
   console.log("Server On!!");
 });
+
+module.exports = http;
