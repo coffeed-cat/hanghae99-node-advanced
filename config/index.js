@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-// mongodb://test:test@localhost:27017/ourblog?authSource=admin
+// mongodb://test:test@localhost:27017/awesomeblog?authSource=admin
 
 const connect = () => {
   mongoose

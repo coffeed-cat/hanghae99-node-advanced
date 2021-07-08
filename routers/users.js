@@ -4,22 +4,8 @@ const User = require("../models/user");
 const SHA256 = require("crypto-js/sha256");
 const SECRET_KEY = require("../config/secretkey");
 const jwt = require("jsonwebtoken");
-const Joi = require("joi");
 const authMiddleware = require("../middlewares/auth-middleware");
-
-const signupSchema = Joi.object({
-  id: Joi.string()
-    .pattern(new RegExp("^(?=.*[a-zA-Z])(?=.*[0-9]).{5,30}$"))
-    .required(),
-
-  nickname: Joi.string().min(3).max(30).required(),
-
-  password: Joi.string()
-    .pattern(new RegExp("^(?=.*[a-zA-Z])(?=.*[0-9]).{4,30}$"))
-    .required(),
-
-  confirmPassword: Joi.ref("password"),
-}).with("password", "confirmPassword");
+const signupValidator = require("../middlewares/signup-validator");
 
 router.get("/signin", (req, res) => {
   res.render("signin");
@@ -43,29 +29,8 @@ router.get("/signup", (req, res) => {
   res.render("signup");
 });
 
-router.post("/signup", async (req, res) => {
+router.post("/signup", signupValidator, async (req, res) => {
   let { id, nickname, password, confirmPassword } = req.body;
-
-  // 여기에 joi로 validate 추가할 것
-  try {
-    await signupSchema.validateAsync(req.body);
-    if (password.includes(id)) {
-      res.status(400).send({ message: "비밀번호에 ID가 포함되어있습니다." });
-      return;
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(400).send({ message: error.details[0].message });
-    return;
-  }
-
-  const user = await User.findOne({ $or: [{ id }, { nickname }] });
-
-  if (user) {
-    res.status(401).send({ message: "이미 존재하는 ID 또는 닉네임입니다." });
-    return;
-  }
-
   password = SHA256(password).toString();
   await User.create({ id, nickname, password });
 

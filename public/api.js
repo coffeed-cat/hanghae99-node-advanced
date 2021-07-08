@@ -1,5 +1,5 @@
 const socket = io("ws://localhost:8080");
-
+// const socket = io();
 socket.on("connect", () => {
   console.log("I'm here!");
 });
@@ -120,7 +120,7 @@ function loadArticles(callback, articleId) {
 function makeArticleCard(i, v) {
   const newArticleCard = `<p id=${v.articleId}>${i + 1} <a href="/articles/${
     v.articleId
-  }">${v.title}</a> ${v.nickname} ${v.date}</p>`;
+  }">${v.title}</a> ${v.nickname} ${new Date(v.date)}</p>`;
   $(".articles-container").append(newArticleCard);
 }
 
@@ -142,7 +142,7 @@ function renderArticleDetail(article) {
   $(".detail-title").text(article.title);
   $(".detail-content").text(article.content);
   $(".detail-nickname").text(article.nickname);
-  $(".detail-date").text(article.date);
+  $(".detail-date").text(new Date(article.date));
 }
 
 function deleteArticle() {
@@ -229,7 +229,7 @@ function renderComments(comments, nickname) {
     const newComment = `<p id="${i.commentId}" class="comment">
                           <span class="comment-nickname">${i.nickname} : </span
                           ><span class="comment-content">${i.content}</span>
-                          <span class="comment-date">${i.date}</span>
+                          <span class="comment-date">${new Date(i.date)}</span>
                         </p>`;
     $(".comments").append(newComment);
     if (i.nickname === nickname) {
